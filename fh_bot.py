@@ -1,57 +1,41 @@
 import discord
 import logging
-import dotenv
+from dotenv import load_dotenv
 import os
-from datetime import datetime
-from apscheduler import AsyncScheduler
+import time
 
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
 
-
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
 
-    async def daily_task(self):
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        print(f'Daily task executed at midnight. Current Date: {current_date}')
-
-    def run_scheduler(self):
-        scheduler = AsyncScheduler()
-        scheduler.add_job(self.daily_task, 'interval', seconds=60)  # Code wird alle 60 Sekunden ausgeführt
-        scheduler.start()
-
-
-
-
+    def print_current_time_every_minute(self):
+        while True:
+            current_time = time.strftime('%Y-%m-%d %H:%M:%S')
+            print(f'Current time: {current_time}')
+            time.sleep(60)  # Sleep for 60 seconds (1 minute)
 
 try:
-    dotenv.load_dotenv(dotenv.find_dotenv())
+    load_dotenv()  # Load .env file
     token = os.getenv('DISCORD_TOKEN')
 
     if token:
-
-
-
-        # Dein Bot-Token wurde erfolgreich geladen
-        print("Bot-Token geladen!")
+        # Your bot token has been successfully loaded
+        print("Bot token loaded!")
 
         intents = discord.Intents.default()
         intents.message_content = True
         discord.utils.setup_logging(level=logging.INFO, root=True)
         client = MyClient(intents=intents)
+        client.print_current_time_every_minute()
+
         client.run(token)
 
-
-
-
     else:
-        print("Bot-Token nicht gefunden! Überprüfe deine .env-Datei.")
+        print("Bot token not found! Check your .env file.")
         exit()
 
 except Exception as e:
-    print(f"Fehler beim Laden des Bot-Tokens: {e}")
-
-
-
+    print(f"Error loading the bot token: {e}")
