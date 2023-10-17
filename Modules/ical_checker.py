@@ -1,38 +1,35 @@
 import requests
 from icalendar import Calendar
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
+load_dotenv()  # Load .env file
 
-class Kalender():
+def check_calendar_for_date(date_to_check):
+    url = os.getenv('ICAL_URL')
+    # iCal-Datei von der URL abrufen
+    response = requests.get(url)
 
-    def __init__(self, ical_summary, ical_description, ical_start, ical_end):
+    if response.status_code == 200:
+        ical_text = response.text
 
-        self.ical_summary = ical_summary
-        self.ical_description = ical_description
-        self.ical_start = ical_start
-        self.ical_end = ical_end
+        # Kalenderobjekt erstellen
+        cal = Calendar.from_ical(ical_text)
 
+        # Datum, das Sie überprüfen möchten
+        date_to_check = datetime.strptime(date_to_check, '%Y-%m-%d')
 
+        # Überprüfen, ob es Einträge an diesem Datum gibt
+        for event in cal.walk('VEVENT'):
+            event_start = event.get('DTSTART').dt
+            if event_start.date() == date_to_check.date():
+                return event.get('summary'), event.get('description'), event.get('dtstart').dt, event.get('dtend').dt
+    return None  # Kein Eintrag an diesem Datum gefunden
 
-
-
-
-calendar_url = 'https://cis.fhstp.ac.at/addons/STPCore/cis/meincis/cal.php?tiny=stp630cbb545bb6a'  # Ersetzen Sie dies durch die tatsächliche URL des iCal-Kalenders
-response = requests.get(calendar_url)
-
-if response.status_code == 200:
-    calendar_data = response.text
-
-else:
-    print(f"Fehler beim Abrufen des Kalenders. Statuscode: {response.status_code}")
-    exit()
-
-cal = Calendar.from_ical(calendar_data)
-
-if __name__ == "__main__":
-    for event in cal.walk('vevent'):
-        summary = event.get('summary')
-        description = event.get('description')
-        start = event.get('dtstart').dt
-        end = event.get('dtend').dt
-        print(f"Termin: {summary}\nBeschreibung: {description}Startzeit: {start}\nEndzeit: {end}\n")
+if __name__ == "__main":
+    termine = check_calendar_for_date("2023-10-17")
+    if termine:
+        print(f"Termin: {termine[0]}\nBeschreibung: {termine[1]}\nStartzeit: {termine[2]}\nEndzeit: {termine[3]}\n")
+    else:
+        print("Kein Termin gefunden.")

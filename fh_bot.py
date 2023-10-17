@@ -3,6 +3,7 @@ import logging
 from dotenv import load_dotenv
 import os
 import time
+import Modules.ical_checker as ical_checker
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -11,11 +12,21 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
 
-    def print_current_time_every_minute(self):
+    def get_cuurent_date(self):
         while True:
             current_time = time.strftime('%Y-%m-%d %H:%M:%S')
-            print(f'Current time: {current_time}')
-            time.sleep(60)  # Sleep for 60 seconds (1 minute)
+
+
+            if current_time.split(" ")[1] == "20:32:00":
+                termine = ical_checker.check_calendar_for_date(current_time.split(" ")[0])
+                if termine:
+                    print(f"Termin: {termine[0]}\nBeschreibung: {termine[1]}Startzeit: {termine[2]}\nEndzeit: {termine[3]}\n")
+                    continue
+
+
+
+
+            #time.sleep(60)  # Sleep for 60 seconds (1 minute)
 
 try:
     load_dotenv()  # Load .env file
@@ -29,9 +40,10 @@ try:
         intents.message_content = True
         discord.utils.setup_logging(level=logging.INFO, root=True)
         client = MyClient(intents=intents)
-        client.print_current_time_every_minute()
+
 
         client.run(token)
+        client.get_cuurent_date()
 
     else:
         print("Bot token not found! Check your .env file.")
