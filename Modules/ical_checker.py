@@ -15,6 +15,7 @@ cal = Calendar.from_ical(calendar_data)
 
 for event in cal.walk('vevent'):
     summary = event.get('summary')
+    description = event.get('description')
     start = event.get('dtstart').dt
     end = event.get('dtend').dt
-    print(f"Termin: {summary}\nStartzeit: {start}\nEndzeit: {end}\n")
+    print(f"Termin: {summary}\nBeschreibung: {description} Startzeit: {start}\nEndzeit: {end}\n")
