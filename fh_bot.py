@@ -2,10 +2,16 @@ import discord
 import logging
 from dotenv import load_dotenv
 import os
-import time
+import datetime
+import asyncio
 import Modules.ical_checker as ical_checker
 
 class MyClient(discord.Client):
+    def __init__(self, intents):
+        super().__init__(intents=intents)
+        self.event_channel_id = 123456789012345678  # Replace with your desired channel ID
+        self.sent_events = set()  # Store sent events to avoid duplicates
+
     async def on_ready(self):
         # This function is called when the bot is ready and logged in.
         print(f'Logged on as {self.user}!')
@@ -13,22 +19,46 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         # This function is called when the bot receives a message.
         # It logs information about the received message.
+        print(f'Message from {message.author}: {message}')
         logging.info(f'Message from {message.author}: {message}')
 
-    def get_cuurent_date(self):
+    async def run_ical_checker(self):
         while True:
-            current_time = time.strftime('%Y-%m-%d %H:%M:%S')
+            # Get the current date and time
+            current_time = datetime.datetime.now()
+            one_day_earlier = current_time - datetime.timedelta(days=-1)
+            current_date = one_day_earlier.strftime('%Y-%m-%d')
+            current_time_str = current_time.strftime('%H:%M:%S')
 
-            if current_time.split(" ")[1] == "20:32:00":
-                # If the current time is 20:32:00, check the calendar for events.
-                termine = ical_checker.check_calendar_for_date(current_time.split(" ")[0])
+            # Check if it's time for the first check (e.g., 8:00 AM)
+            if current_time_str >= '08:00:00':
+                termine = ical_checker.check_calendar_for_date(current_date)
+
                 if termine:
-                    # If events are found, print event details.
-                    print(f"Termin: {termine[0]}\nBeschreibung: {termine[1]}\nStartzeit: {termine[2]}\nEndzeit: {termine[3]}\n")
-                    continue
+                    event_id = termine[0]  # Use an appropriate identifier for the event
+                    if event_id not in self.sent_events:
+                        self.sent_events.add(event_id)
+                        event_info = f"Termin: {termine[0]}\nBeschreibung: {termine[1]}\nStartzeit: {termine[2]}\nEndzeit: {termine[3]}\n"
+                        channel = self.get_channel(self.event_channel_id)
 
-            # Uncomment the next line if you want to add a 60-second delay between checks.
-            # time.sleep(60)
+                        if channel:
+                            await channel.send(event_info)
+
+            # Check if it's time for the second check (e.g., 8:00 PM)
+            if current_time_str >= '20:00:00':
+                termine = ical_checker.check_calendar_for_date(current_date)
+
+                if termine:
+                    event_id = termine[0]  # Use an appropriate identifier for the event
+                    if event_id not in self.sent_events:
+                        self.sent_events.add(event_id)
+                        event_info = f"Termin: {termine[0]}\nBeschreibung: {termine[1]}\nStartzeit: {termine[2]}\nEndzeit: {termine[3]}\n"
+                        channel = self.get_channel(self.event_channel_id)
+
+                        if channel:
+                            await channel.send(event_info)
+
+            await asyncio.sleep(60)  # Sleep for 60 seconds before checking again.
 
 try:
     load_dotenv()  # Load .env file
@@ -42,10 +72,14 @@ try:
         intents.message_content = True
         discord.utils.setup_logging(level=logging.INFO, root=False)
         client = MyClient(intents=intents)
+        client.event_channel_id = 1072780774463504404  # Replace with your desired channel ID
 
-        # Start the bot and the get_cuurent_date function.
+        @client.event
+        async def on_ready():
+            await client.run_ical_checker()
+
+        # Start the bot and the run_ical_checker function.
         client.run(token)
-        client.get_cuurent_date()
 
     else:
         print("Bot token not found! Check your .env file.")

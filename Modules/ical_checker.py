@@ -30,7 +30,7 @@ def check_calendar_for_date(date_to_check):
 
 if __name__ == "__main__":
     # Check the calendar for entries on the specified date
-    termine = check_calendar_for_date("2023-10-19")
+    termine = check_calendar_for_date("2023-10-23")
     if termine:
         # If entries are found, print their details in English
         print(f"Event: {termine[0]}\nDescription: {termine[1]}\nStart Time: {termine[2]}\nEnd Time: {termine[3]}\n")
