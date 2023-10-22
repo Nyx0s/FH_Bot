@@ -18,7 +18,14 @@ class MyClient(discord.Client):
     async def on_ready(self):
         # This function is called when the bot is ready and logged in.
         print(f'Logged on as {self.user}!')
+    async def on_member_join(self, member):
+        # This function is called when a new member joins the server.
 
+        # Create a welcome message
+        welcome_message = f"Willkommen {member.mention} ich bin Botty wenn du hilfe brauchst, kannst du mich jederzeit mit \"./help\" erreichen!."
+
+        # Send the welcome message via DM
+        await member.send(welcome_message)
     async def on_message(self, message):
         # This function is called when the bot receives a message.
         if message.author == client.user:
