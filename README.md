@@ -1,51 +1,61 @@
-Discord Bot with iCal Event Notifications
-This README provides an overview of the Discord bot that sends event notifications using the iCal format. The bot can be configured to periodically check for events in an iCal feed and send event notifications to a designated Discord channel.
+# Discord Bot with iCal Event Notifications
 
-Prerequisites
-Before you can use the Discord bot and iCal functionality, ensure that you have the following prerequisites:
+This Discord bot is designed to periodically check an iCal calendar feed and send event notifications to a specified Discord channel. It can be configured to check for events multiple times a day and avoids sending duplicate notifications.
 
-Python installed on your system (v3.6 or higher).
-Necessary Python packages installed, including requests, icalendar, dotenv, and discord.py.
-A Discord bot token. You can create a bot and obtain the token from the Discord Developer Portal.
-An iCal feed URL for the calendar you want to track.
-Configuration
-Clone or download the repository to your local machine.
+## Prerequisites
 
-Install the required Python packages using pip:
+Before using this bot, make sure you have the following prerequisites in place:
 
-Copy code
-pip install requests icalendar python-dotenv discord.py
-Create a .env file in the project directory and add the following variables:
+- **Python:** The bot is written in Python and requires Python 3.6 or higher.
 
-makefile
-Copy code
-DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
-ICAL_URL=YOUR_ICAL_FEED_URL
-Replace YOUR_DISCORD_BOT_TOKEN with your bot's token and YOUR_ICAL_FEED_URL with the URL of the iCal feed you want to track.
+- **Python Packages:** Ensure you have the necessary Python packages installed. You can install them using pip:
 
-Update the Discord channel ID in the MyClient class in the code to specify the channel where event notifications will be sent. Replace self.event_channel_id with your desired channel ID.
 
-How it Works
-The project consists of two main components:
+- **Discord Bot Token:** You'll need a Discord bot token to run the bot. You can create a bot and obtain the token from the [Discord Developer Portal](https://discord.com/developers/applications).
 
-iCal Event Checker (ical_checker.py)
+- **iCal Feed URL:** Have the URL of the iCal feed you want to track. This is the calendar whose events the bot will monitor.
 
-The check_calendar_for_date(date_to_check) function retrieves the iCal data from the specified URL and parses it to extract event details for a given date.
-Events found on the specified date are returned as a tuple: (event_summary, event_description, event_start_time, event_end_time).
-Discord Bot (discord_bot.py)
+## Configuration
 
-The Discord bot, created using the discord.py library, periodically checks the iCal feed for events using the ical_checker module.
-The bot checks for events twice a day (configurable) and sends event notifications to the designated Discord channel.
-It avoids sending duplicate event notifications by storing event IDs in a set.
-Running the Bot
-Execute the discord_bot.py script:
+1. Clone or download this repository to your local machine.
 
-Copy code
-python discord_bot.py
-The bot will log in and start running. It will periodically check the iCal feed and send event notifications to the specified channel.
+2. Create a `.env` file in the project directory and set the following variables:
 
-Customization
-You can customize the frequency of event checks by modifying the code that checks the time (e.g., checking for events at 8:00 AM and 8:00 PM).
-You can also customize the channel where event notifications are sent by changing the self.event_channel_id variable in the MyClient class.
-If you want to check for events further in advance or at different times, you can adjust the code accordingly.
+
+Replace `YOUR_DISCORD_BOT_TOKEN` with your bot's token and `YOUR_ICAL_FEED_URL` with the URL of the iCal feed you want to track.
+
+3. Customize the Discord channel where event notifications will be sent. Open the `discord_bot.py` script and replace `self.event_channel_id` with your desired channel ID.
+
+## How it Works
+
+The project consists of two primary components:
+
+1. **iCal Event Checker (`ical_checker.py`)**
+
+- This component checks the specified iCal feed for events on a given date.
+- Events found on the specified date are returned as a tuple: `(event_summary, event_description, event_start_time, event_end_time)`.
+
+2. **Discord Bot (`discord_bot.py`)**
+
+- This is the Discord bot created using the `discord.py` library.
+- The bot periodically checks the iCal feed for events and sends notifications to the specified Discord channel.
+- It avoids sending duplicate event notifications by storing event IDs in a set.
+
+## Running the Bot
+
+1. Run the `discord_bot.py` script:
+
+
+2. The bot will log in and start running. It will periodically check the iCal feed and send event notifications to the specified channel.
+
+## Customization
+
+- You can customize the frequency of event checks by modifying the code that checks the time (e.g., checking for events at 8:00 AM and 8:00 PM).
+- You can also customize the channel where event notifications are sent by changing the `self.event_channel_id` variable in the `MyClient` class.
+- If you want to check for events further in advance or at different times, you can adjust the code accordingly.
+
 Feel free to modify and extend this bot to fit your specific needs.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
