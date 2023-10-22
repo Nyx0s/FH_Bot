@@ -46,6 +46,7 @@ class MyClient(discord.Client):
 
             # Check if it's time for the second check (e.g., 8:00 PM)
             if current_time_str >= '20:00:00':
+
                 termine = ical_checker.check_calendar_for_date(current_date)
 
                 if termine:
