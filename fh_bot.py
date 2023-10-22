@@ -6,10 +6,13 @@ import datetime
 import asyncio
 import Modules.ical_checker as ical_checker
 
+# Logging configuration
+logging.basicConfig(filename='discord.log', level=logging.INFO, format='%(asctime)s [%(name)s] [%(levelname)s] %(message)s')
+
 class MyClient(discord.Client):
     def __init__(self, intents):
         super().__init__(intents=intents)
-        self.event_channel_id = 123456789012345678  # Replace with your desired channel ID
+        self.event_channel_id =  1072780774463504404  # Replace with your desired channel ID
         self.sent_events = set()  # Store sent events to avoid duplicates
 
     async def on_ready(self):
@@ -18,6 +21,9 @@ class MyClient(discord.Client):
 
     async def on_message(self, message):
         # This function is called when the bot receives a message.
+        if message.author == client.user:
+            return
+
         # It logs information about the received message.
         print(f'Message from {message.author}: {message}')
         logging.info(f'Message from {message.author}: {message}')
@@ -70,8 +76,10 @@ try:
         print("Bot token loaded!")
 
         intents = discord.Intents.default()
+        intents.guilds = True
+        intents.members = True
         intents.message_content = True
-        discord.utils.setup_logging(level=logging.INFO, root=False)
+        handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
         client = MyClient(intents=intents)
         client.event_channel_id = 1072780774463504404  # Replace with your desired channel ID
 
@@ -80,7 +88,7 @@ try:
             await client.run_ical_checker()
 
         # Start the bot and the run_ical_checker function.
-        client.run(token)
+        client.run(token, log_handler=handler)
 
     else:
         print("Bot token not found! Check your .env file.")
