@@ -12,7 +12,7 @@ logging.basicConfig(filename='discord.log', level=logging.INFO, format='%(asctim
 class MyClient(discord.Client):
     def __init__(self, intents):
         super().__init__(intents=intents)
-        self.event_channel_id =  1072780774463504404  # Replace with your desired channel ID
+        self.event_channel_id = 1150717698704154676  # Replace with your desired channel ID
         self.sent_events = set()  # Store sent events to avoid duplicates
 
     async def on_ready(self):
@@ -26,6 +26,8 @@ class MyClient(discord.Client):
 
         # Send the welcome message via DM
         await member.send(welcome_message)
+
+
     async def on_message(self, message):
         # This function is called when the bot receives a message.
         if message.author == client.user:
@@ -34,6 +36,13 @@ class MyClient(discord.Client):
         # It logs information about the received message.
         print(f'Message from {message.author}: {message}')
         logging.info(f'Message from {message.author}: {message}')
+
+
+        # Start of callable chat funcions
+
+        # Display help messagae
+        if message.content.startswith('./help') or message.content.startswith('./h'):
+            await message.channel.send("Hallo ich bin Botty, hier entsteht eine Discord-Bot-Hilfe...")
 
     async def run_ical_checker(self):
         while True:
@@ -88,7 +97,7 @@ try:
         intents.message_content = True
         handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
         client = MyClient(intents=intents)
-        client.event_channel_id = 1072780774463504404  # Replace with your desired channel ID
+        client.event_channel_id = 1150717698704154676  # Replace with your desired channel ID
 
         @client.event
         async def on_ready():
